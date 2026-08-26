@@ -1,0 +1,46 @@
+{
+  "name": "roku-dev-mcp",
+  "version": "1.0.0",
+  "description": "Roku development toolkit for AI-assisted BrightScript/SceneGraph development",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "roku-dev-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run test/unit",
+    "test:watch": "vitest test/unit",
+    "test:integration": "ROKU_INTEGRATION_TEST=1 vitest run test/integration",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "roku",
+    "mcp",
+    "model-context-protocol",
+    "brightscript",
+    "scenegraph",
+    "ai-agent"
+  ],
+  "author": "",
+  "license": "Unlicense",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.7",
+    "fast-xml-parser": "^5.0.8",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/node": "^22.13.9",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
