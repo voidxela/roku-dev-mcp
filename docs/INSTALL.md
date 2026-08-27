@@ -47,10 +47,10 @@ When configuring `roku-dev-mcp` in any MCP client, supply the following environm
 
 ### 3.1 Antigravity (CLI & IDE)
 
-Antigravity natively supports MCP servers configured in user or workspace settings.
+Antigravity natively supports MCP servers configured globally or packaged within workspace plugins.
 
-#### Option A: Workspace Configuration (`.antigravity/mcp.json`)
-Create or edit `.antigravity/mcp.json` at the root of your project:
+#### Option A: Global Configuration (`~/.gemini/config/mcp_config.json`)
+Add the server under `mcpServers` in `~/.gemini/config/mcp_config.json`:
 
 ```json
 {
@@ -67,9 +67,17 @@ Create or edit `.antigravity/mcp.json` at the root of your project:
 }
 ```
 
-#### Option B: Global Antigravity CLI Config (`~/.gemini/antigravity-cli/config.json`)
-Add the server under `mcpServers` in your global configuration:
+#### Option B: Workspace Plugin (`.agents/plugins/roku-dev/`)
+To bundle the MCP server as a project customization, create a plugin manifest and MCP configuration:
 
+1. Create `.agents/plugins/roku-dev/plugin.json`:
+```json
+{
+  "name": "roku-dev"
+}
+```
+
+2. Create `.agents/plugins/roku-dev/mcp_config.json`:
 ```json
 {
   "mcpServers": {
