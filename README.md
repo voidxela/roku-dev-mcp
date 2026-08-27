@@ -179,14 +179,20 @@ Deep-links into specific content items within the sideloaded application.
 # Install dependencies
 npm install
 
-# Run all unit tests (uses built-in MockRokuDevice)
+# Run unit tests (uses built-in MockRokuDevice)
 npm test
+
+# Run unit tests specifically
+npm run test:unit
+
+# Run integration tests against a real Roku TV
+npm run test:integration
+
+# Run all tests (unit + integration)
+ROKU_INTEGRATION_TEST=1 npm test
 
 # Run build
 npm run build
-
-# Run integration tests against a real Roku TV (requires ROKU_INTEGRATION_TEST=1)
-ROKU_INTEGRATION_TEST=1 npm run test:integration
 ```
 
 For full testing documentation and step-by-step verification instructions, refer to [`docs/TESTING.md`](docs/TESTING.md).

@@ -76,7 +76,7 @@ If both return valid responses, proceed to Step 4.
 Execute the full integration test suite against the device:
 
 ```bash
-ROKU_INTEGRATION_TEST=1 npm run test:integration
+npm run test:integration
 ```
 
 Expected output:
