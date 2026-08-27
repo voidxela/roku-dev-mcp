@@ -3,6 +3,7 @@ dist/
 out/
 *.log
 .env
+.antigravity/
 .DS_Store
 *.zip
 coverage/
