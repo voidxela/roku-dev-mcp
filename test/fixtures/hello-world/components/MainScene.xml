@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+  <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+  <children>
+    <LayoutGroup id="mainLayout" layoutDirection="vert" translation="[100, 100]">
+      <Label id="helloLabel" text="Hello Roku MCP!" />
+      <PosterGrid id="sampleGrid" itemSize="[300, 200]" />
+    </LayoutGroup>
+  </children>
+</component>
