@@ -24,6 +24,10 @@ export class MockRokuDevice {
   private bsSockets: Set<net.Socket> = new Set();
 
   public lastKeypress?: string;
+  public keypressHistory: string[] = [];
+  public lastKeyDown?: string;
+  public lastKeyUp?: string;
+  public ecpFailuresRemaining: number = 0;
   public lastLaunchedApp?: string;
   public activeAppId: string = "dev";
   public activeAppName: string = "MockApp";
@@ -158,9 +162,27 @@ SceneGraph Nodes (all):
       this.ecpServer = http.createServer((req, res) => {
         const url = req.url || "";
 
+        if (this.ecpFailuresRemaining > 0) {
+          this.ecpFailuresRemaining--;
+          res.writeHead(500);
+          res.end("Simulated ECP error");
+          return;
+        }
+
         if (req.method === "POST" && url.startsWith("/keypress/")) {
           const key = decodeURIComponent(url.split("/keypress/")[1]);
           this.lastKeypress = key;
+          this.keypressHistory.push(key);
+          res.writeHead(200);
+          res.end();
+        } else if (req.method === "POST" && url.startsWith("/keydown/")) {
+          const key = decodeURIComponent(url.split("/keydown/")[1]);
+          this.lastKeyDown = key;
+          res.writeHead(200);
+          res.end();
+        } else if (req.method === "POST" && url.startsWith("/keyup/")) {
+          const key = decodeURIComponent(url.split("/keyup/")[1]);
+          this.lastKeyUp = key;
           res.writeHead(200);
           res.end();
         } else if (req.method === "POST" && url.startsWith("/launch/")) {

@@ -8,6 +8,7 @@ import { handleBuildAndDeploy } from "../../../src/tools/build-and-deploy.js";
 import { handleCaptureState } from "../../../src/tools/capture-state.js";
 import { handleAssertPlayback } from "../../../src/tools/assert-playback.js";
 import { handleLaunch } from "../../../src/tools/launch.js";
+import { handleSendKeys } from "../../../src/tools/send-keys.js";
 
 describe("MCP Tools", () => {
   let mockRoku: MockRokuDevice;
@@ -115,5 +116,19 @@ describe("MCP Tools", () => {
     expect(res.launched).toBe(true);
     expect(res.app_id).toBe("dev");
     expect(res.content_id).toBe("test1234");
+  });
+
+  it("handles roku_send_keys", async () => {
+    const res = await handleSendKeys(
+      {
+        keys: ["Down", "Select"],
+        delay_ms: 10,
+      },
+      { ecp: serverInstance.adapters.ecp }
+    );
+
+    expect(res.total_keys).toBe(2);
+    expect(res.keys_sent).toEqual(["Down", "Select"]);
+    expect(res.errors).toHaveLength(0);
   });
 });

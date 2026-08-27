@@ -101,6 +101,8 @@ export const VALID_ECP_KEYS = new Set<string>([
   "Back",
   // Playback
   "Play",
+  "Pause",
+  "Stop",
   "Rev",
   "Fwd",
   "InstantReplay",
@@ -114,7 +116,9 @@ export const VALID_ECP_KEYS = new Set<string>([
   "VolumeDown",
   "VolumeMute",
   // Power (TV only)
+  "Power",
   "PowerOff",
+  "PowerOn",
   // TV Input (TV only)
   "ChannelUp",
   "ChannelDown",
@@ -128,13 +132,100 @@ export const VALID_ECP_KEYS = new Set<string>([
   "FindRemote",
 ]);
 
-export function isValidECPKey(key: string): boolean {
+export const ECP_KEY_ALIASES: Record<string, string> = {
+  // Navigation
+  home: "Home",
+  up: "Up",
+  down: "Down",
+  left: "Left",
+  right: "Right",
+  select: "Select",
+  ok: "Select",
+  back: "Back",
+  // Playback
+  play: "Play",
+  pause: "Pause",
+  playpause: "Play",
+  "play/pause": "Play",
+  stop: "Stop",
+  rev: "Rev",
+  rewind: "Rev",
+  fwd: "Fwd",
+  fastforward: "Fwd",
+  fast_forward: "Fwd",
+  ff: "Fwd",
+  instantreplay: "InstantReplay",
+  instant_replay: "InstantReplay",
+  replay: "InstantReplay",
+  // Input
+  info: "Info",
+  options: "Info",
+  star: "Info",
+  asterisk: "Info",
+  "*": "Info",
+  backspace: "Backspace",
+  delete: "Backspace",
+  search: "Search",
+  enter: "Enter",
+  // Volume (TV only)
+  volumeup: "VolumeUp",
+  volup: "VolumeUp",
+  vol_up: "VolumeUp",
+  volume_up: "VolumeUp",
+  volumedown: "VolumeDown",
+  voldown: "VolumeDown",
+  vol_down: "VolumeDown",
+  volume_down: "VolumeDown",
+  volumemute: "VolumeMute",
+  mute: "VolumeMute",
+  vol_mute: "VolumeMute",
+  volume_mute: "VolumeMute",
+  // Power (TV only)
+  power: "Power",
+  poweroff: "PowerOff",
+  power_off: "PowerOff",
+  poweron: "PowerOn",
+  power_on: "PowerOn",
+  // TV Input (TV only)
+  channelup: "ChannelUp",
+  channel_up: "ChannelUp",
+  channeldown: "ChannelDown",
+  channel_down: "ChannelDown",
+  inputtuner: "InputTuner",
+  tuner: "InputTuner",
+  inputhdmi1: "InputHDMI1",
+  hdmi1: "InputHDMI1",
+  inputhdmi2: "InputHDMI2",
+  hdmi2: "InputHDMI2",
+  inputhdmi3: "InputHDMI3",
+  hdmi3: "InputHDMI3",
+  inputhdmi4: "InputHDMI4",
+  hdmi4: "InputHDMI4",
+  inputav1: "InputAV1",
+  av1: "InputAV1",
+  // Misc
+  findremote: "FindRemote",
+  find_remote: "FindRemote",
+};
+
+export function normalizeECPKey(key: string): string | null {
+  if (typeof key !== "string" || !key) {
+    return null;
+  }
   if (VALID_ECP_KEYS.has(key)) {
-    return true;
+    return key;
   }
-  // Check Lit_{char} pattern
-  if (key.startsWith("Lit_") && key.length > 4) {
-    return true;
+  const lower = key.toLowerCase();
+  if (ECP_KEY_ALIASES[lower]) {
+    return ECP_KEY_ALIASES[lower];
   }
-  return false;
+  if (lower.startsWith("lit_") && key.length > 4) {
+    return "Lit_" + key.slice(4);
+  }
+  return null;
 }
+
+export function isValidECPKey(key: string): boolean {
+  return normalizeECPKey(key) !== null;
+}
+
