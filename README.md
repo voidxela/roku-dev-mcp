@@ -115,6 +115,8 @@ Add the server to your MCP client configuration (e.g., `mcpServers` in `claude_d
 }
 ```
 
+For detailed configuration instructions for **Antigravity**, **Claude CLI / Claude Desktop**, **Codex**, and **Opencode**, see [`docs/INSTALL.md`](docs/INSTALL.md).
+
 ---
 
 ## 6. Available MCP Tools
