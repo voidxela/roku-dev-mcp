@@ -22,6 +22,7 @@ export class MockRokuDevice {
   private sgServer?: net.Server;
   private bsServer?: net.Server;
   private bsSockets: Set<net.Socket> = new Set();
+  public bsConnectionCount: number = 0;
 
   public lastKeypress?: string;
   public keypressHistory: string[] = [];
@@ -256,6 +257,7 @@ SceneGraph Nodes (all):
   private startBsServer(): Promise<void> {
     return new Promise((resolve) => {
       this.bsServer = net.createServer((socket) => {
+        this.bsConnectionCount++;
         this.bsSockets.add(socket);
 
         socket.write("------ Running dev 'MyApp' main ------\r\n");

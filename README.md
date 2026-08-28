@@ -57,6 +57,8 @@ Roku OS separates development APIs across four distinct network protocols on fou
 | **8080** | Telnet (TCP) | None | On-demand (Serialized) | SceneGraph live node tree dumps (`sgnodes all`) |
 | **8085** | Telnet (TCP) | None | Persistent background | BrightScript console logs, real-time crash capture, interactive debugger |
 
+When several local MCP clients target the same Roku, they coordinate their BrightScript-console connection automatically. Only one local instance connects to port 8085; the others receive its log stream over a local IPC socket.
+
 *\*Requires "Control by mobile apps" enabled in Roku OS 14.1+.*
 
 ---

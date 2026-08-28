@@ -1010,11 +1010,13 @@ Deep-link into a specific content item within the sideloaded app.
 | 80 | HTTP (per-request) | Create for each deploy/screenshot operation. Digest auth is re-negotiated per request. |
 | 8060 | HTTP (per-request) | Stateless REST calls. No persistent connection needed. |
 | 8080 | TCP socket (on-demand) | Connect → send command → read response → disconnect. One operation at a time. |
-| 8085 | TCP socket (persistent) | Established on server startup. Reconnects automatically on disconnect. |
+| 8085 | TCP socket (persistent) | One local MCP instance owns the Roku socket; other local instances subscribe through a per-device IPC broker. Reconnects automatically on disconnect. |
 
 ### 7.2 Port 8085 Reconnection Strategy
 
 The background log capture connection must be resilient:
+
+Because a Roku permits only one BrightScript debug-console client, MCP server instances running as the same local user must coordinate through a per-device local IPC socket. The elected local owner keeps the single TCP connection to Roku; follower instances receive the owner’s buffered and live log lines. If the owner exits, a follower retries and becomes the owner. This prevents independently started coding agents from evicting each other from port 8085.
 
 1. On initial connection failure: retry every 3 seconds, up to 10 attempts.
 2. On mid-session disconnect (app crash/restart, device reboot):

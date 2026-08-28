@@ -60,4 +60,22 @@ describe("BsConsoleAdapter", () => {
     const output = await adapter.sendCommand("bt", 500);
     expect(output).toContain("Function main()");
   });
+
+  it("shares one Roku console connection across local adapter instances", async () => {
+    const follower = new BsConsoleAdapter({
+      deviceIp: "127.0.0.1",
+      port: mockRoku.bsPort,
+      bufferSize: 100,
+    });
+    const connectionsBefore = mockRoku.bsConnectionCount;
+    follower.start();
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    expect(mockRoku.bsConnectionCount).toBe(connectionsBefore);
+    mockRoku.emitBsLog("shared console log");
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(follower.getAllLogs().some((entry) => entry.text === "shared console log")).toBe(true);
+    await expect(follower.sendCommand("bt", 500)).resolves.toContain("Function main()");
+    follower.stop();
+  });
 });
