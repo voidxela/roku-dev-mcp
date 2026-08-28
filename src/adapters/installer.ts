@@ -79,7 +79,7 @@ export class InstallerAdapter {
     if (isSuccess) {
       return {
         success: true,
-        message: `Application ${action.toLowerCase()}ed successfully`,
+        message: `Application ${action === "Install" ? "installed" : "replaced"} successfully`,
       };
     }
 

@@ -33,6 +33,9 @@ describe("InstallerAdapter", () => {
     const result = await adapter.installOrReplace(dummyZip, "Install");
     expect(result.success).toBe(true);
     expect(result.message).toContain("installed");
+
+    const replacement = await adapter.installOrReplace(dummyZip, "Replace");
+    expect(replacement.message).toContain("replaced");
   });
 
   it("handles install failures parsed from HTML", async () => {
