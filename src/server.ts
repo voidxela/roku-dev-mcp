@@ -6,6 +6,8 @@ import { SgDebugAdapter } from "./adapters/sg-debug.js";
 import { BsConsoleAdapter } from "./adapters/bs-console.js";
 import { RokuServerConfig } from "./config.js";
 import { handleBuildAndDeploy } from "./tools/build-and-deploy.js";
+import { handleBuild } from "./tools/build.js";
+import { handleDeploy } from "./tools/deploy.js";
 import { handleSendKeys } from "./tools/send-keys.js";
 import { handleGetUiTree } from "./tools/get-ui-tree.js";
 import { handleCaptureState } from "./tools/capture-state.js";
@@ -14,6 +16,8 @@ import { handleWaitForCondition } from "./tools/wait-for-condition.js";
 import { handleLaunch } from "./tools/launch.js";
 import {
   BuildAndDeployInputSchema,
+  BuildInputSchema,
+  DeployInputSchema,
   SendKeysInputSchema,
   GetUiTreeInputSchema,
   CaptureStateInputSchema,
@@ -95,10 +99,40 @@ export function createRokuDevServer(
     return rokuErr.toMcpResult();
   }
 
-  // 1. Tool: roku_build_and_deploy
+  // 1. Tool: roku_build
+  server.tool(
+    "roku_build",
+    "Runs the project's build script and returns its validated Roku ZIP package. Use package_path when a build emits multiple ZIPs.",
+    BuildInputSchema.shape,
+    async (args) => {
+      try {
+        const result = await handleBuild({ project_dir: args.project_dir, package_path: args.package_path });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return formatError(err);
+      }
+    }
+  );
+
+  // 2. Tool: roku_deploy
+  server.tool(
+    "roku_deploy",
+    "Validates and sideloads a pre-built Roku ZIP package. The ZIP must contain manifest at its root.",
+    DeployInputSchema.shape,
+    async (args) => {
+      try {
+        const result = await handleDeploy({ package_path: args.package_path, action: args.action }, { installer, bsConsole });
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (err) {
+        return formatError(err);
+      }
+    }
+  );
+
+  // 3. Tool: roku_build_and_deploy
   server.tool(
     "roku_build_and_deploy",
-    "Zips a BrightScript/SceneGraph source directory and sideloads it to the Roku device.",
+    "Legacy convenience: zips source directly and sideloads it. Prefer roku_build then roku_deploy for projects with a build step.",
     BuildAndDeployInputSchema.shape,
     async (args) => {
       try {

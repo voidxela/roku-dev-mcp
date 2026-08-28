@@ -1,7 +1,40 @@
 import { z } from "zod";
 import { ActiveApp, CrashEvent, LogEntry, MediaPlayerInfo, SGTreeResult } from "./roku.js";
 
-// Tool 1: roku_build_and_deploy
+// Tool 1: roku_build
+export const BuildInputSchema = z.object({
+  project_dir: z.string().describe("Absolute path to a Roku project with a package.json build script."),
+  package_path: z.string().optional().describe("Path to the ZIP produced by the build, relative to project_dir or absolute. Required if the build produces more than one ZIP."),
+});
+
+export type BuildInput = z.infer<typeof BuildInputSchema>;
+
+export interface BuildResult {
+  package_path: string;
+  package_size_bytes: number;
+  build_time_ms: number;
+  package_manager: "npm" | "pnpm" | "yarn";
+}
+
+// Tool 2: roku_deploy
+export const DeployInputSchema = z.object({
+  package_path: z.string().describe("Absolute path to a Roku ZIP package whose root contains manifest."),
+  action: z.enum(["Install", "Replace"]).default("Install"),
+});
+
+export type DeployInput = z.infer<typeof DeployInputSchema>;
+
+export interface DeployResult {
+  success: boolean;
+  message: string;
+  install_time_ms: number;
+  zip_size_bytes: number;
+  package_path: string;
+  startup_log: string[];
+  crash_detected: boolean;
+}
+
+// Tool 3: roku_build_and_deploy (legacy source-directory convenience)
 export const BuildAndDeployInputSchema = z.object({
   source_dir: z
     .string()

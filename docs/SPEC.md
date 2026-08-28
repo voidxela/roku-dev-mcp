@@ -563,9 +563,33 @@ The server must parse backtraces into structured JSON:
 
 All tools are registered via the MCP SDK's `server.tool()` method with Zod input schemas. Every tool returns a structured JSON payload inside the MCP `content` array.
 
-### 6.1 `roku_build_and_deploy`
+### 6.1 `roku_build`
 
-Zips a BrightScript/SceneGraph source directory and sideloads it to the Roku device.
+Runs the project's own `build` script and returns a validated deployable Roku package. The tool detects `pnpm`, `yarn`, or `npm` from the lockfile, then runs the equivalent of `{package_manager} run build`. It never assumes an output filename or build-system implementation.
+
+The build output must contain exactly one ZIP, unless `package_path` identifies the intended ZIP. The chosen ZIP must contain `manifest` at its root, which is the Roku sideloading requirement.
+
+```typescript
+{
+  project_dir: z.string(),
+  package_path: z.string().optional(),
+}
+```
+
+### 6.2 `roku_deploy`
+
+Sideloads a previously built Roku ZIP. This is the deployment primitive and accepts artifacts produced by BrighterScript, `roku-deploy`, or another compatible build system.
+
+```typescript
+{
+  package_path: z.string(),
+  action: z.enum(["Install", "Replace"]).default("Install"),
+}
+```
+
+### 6.3 `roku_build_and_deploy` (legacy)
+
+Zips a BrightScript/SceneGraph source directory and sideloads it to the Roku device. This convenience tool is appropriate only for projects without a separate build artifact. Agents should use `roku_build` followed by `roku_deploy` when the project defines a build step.
 
 **Input Schema:**
 
@@ -620,7 +644,7 @@ Zips a BrightScript/SceneGraph source directory and sideloads it to the Roku dev
 
 ---
 
-### 6.2 `roku_send_keys`
+### 6.4 `roku_send_keys`
 
 Sends a sequence of ECP keypress commands with configurable inter-key delay.
 
@@ -663,7 +687,7 @@ Sends a sequence of ECP keypress commands with configurable inter-key delay.
 
 ---
 
-### 6.3 `roku_get_ui_tree`
+### 6.5 `roku_get_ui_tree`
 
 Captures and parses the full SceneGraph node tree from the SG Debug Server.
 
@@ -724,7 +748,7 @@ Captures and parses the full SceneGraph node tree from the SG Debug Server.
 
 ---
 
-### 6.4 `roku_capture_state`
+### 6.6 `roku_capture_state`
 
 Returns a multi-modal snapshot of the device's current state.
 
@@ -799,7 +823,7 @@ The MCP response uses the `image` content type for the screenshot when available
 
 ---
 
-### 6.5 `roku_assert_playback`
+### 6.7 `roku_assert_playback`
 
 Queries the media player state to verify video playback status.
 
@@ -849,7 +873,7 @@ Queries the media player state to verify video playback status.
 
 ---
 
-### 6.6 `roku_wait_for_condition`
+### 6.8 `roku_wait_for_condition`
 
 Polls for a condition to be satisfied, enabling deterministic waiting without hardcoded sleeps.
 
@@ -934,7 +958,7 @@ Polls for a condition to be satisfied, enabling deterministic waiting without ha
 
 ---
 
-### 6.7 `roku_launch`
+### 6.9 `roku_launch`
 
 Deep-link into a specific content item within the sideloaded app.
 

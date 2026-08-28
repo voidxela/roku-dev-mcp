@@ -121,22 +121,28 @@ For detailed configuration instructions for **Antigravity**, **Claude CLI / Clau
 
 ## 6. Available MCP Tools
 
-### 1. `roku_build_and_deploy`
-Zips a BrightScript/SceneGraph project directory and sideloads it to the Roku device.
+### 1. `roku_build`
+Runs the project's `build` script with the detected package manager (`npm`, `pnpm`, or `yarn`) and returns its Roku ZIP artifact. If the build produces more than one ZIP, provide `package_path` to select one.
+
+### 2. `roku_deploy`
+Validates and sideloads a pre-built Roku ZIP. The archive must have `manifest` at its root; it can be produced by BrighterScript, `roku-deploy`, or any other build system.
+
+### 3. `roku_build_and_deploy`
+Legacy convenience tool that zips a BrightScript/SceneGraph project directory and sideloads the raw source. Prefer `roku_build` then `roku_deploy` for projects with a build step, because compiled/transformed sources must come from the build artifact.
 - **Inputs**:
   - `source_dir` (`string`): Absolute path to project root (must contain `manifest`).
   - `action` (`"Install" | "Replace"`, default: `"Install"`): Install replaces any existing sideloaded app.
   - `exclude_patterns` (`string[]`, optional): Additional glob patterns to exclude.
 - **Returns**: Deployment result, startup logs, install duration, and crash status.
 
-### 2. `roku_send_keys`
+### 4. `roku_send_keys`
 Sends sequential ECP keypress commands with configurable inter-key delays.
 - **Inputs**:
   - `keys` (`string[]`): Ordered list of ECP keys (e.g. `["Home", "Down", "Select", "Lit_a"]`).
   - `delay_ms` (`number`, optional): Delay between keypresses in milliseconds.
 - **Returns**: Keys sent count, execution duration, and errors if any.
 
-### 3. `roku_get_ui_tree`
+### 5. `roku_get_ui_tree`
 Inspects and parses the live SceneGraph node tree into a JSON tree structure.
 - **Inputs**:
   - `filter_id` (`string`, optional): Subtree root node ID.
@@ -144,7 +150,7 @@ Inspects and parses the live SceneGraph node tree into a JSON tree structure.
   - `max_depth` (`number`, optional): Maximum tree depth.
 - **Returns**: Parsed node tree with reference counts and field data.
 
-### 4. `roku_capture_state`
+### 6. `roku_capture_state`
 Produces a composite multi-modal snapshot of the device state.
 - **Inputs**:
   - `log_lines` (`number`, default: `50`): Recent BrightScript log entries.
@@ -152,12 +158,12 @@ Produces a composite multi-modal snapshot of the device state.
   - `include_ui_tree` (`boolean`, default: `false`): SceneGraph tree snapshot.
 - **Returns**: Composite JSON state plus inline image payload for multimodal agents.
 
-### 5. `roku_assert_playback`
+### 7. `roku_assert_playback`
 Queries ECP media player to verify video playback state and metrics.
 - **Inputs**: None.
 - **Returns**: `is_playing`, `is_buffering`, `progress_percent`, duration, stream bitrate, and audio/video formats.
 
-### 6. `roku_wait_for_condition`
+### 8. `roku_wait_for_condition`
 Deterministic condition-based polling to avoid hardcoded sleep timers.
 - **Inputs**:
   - `condition` (`string`): Condition expression (`node_exists: {id}`, `node_field: {id}.{field}={val}`, `playback_state: {state}`, `app_active: {id}`, `log_contains: {pattern}`, `crash_detected`).
@@ -165,7 +171,7 @@ Deterministic condition-based polling to avoid hardcoded sleep timers.
   - `poll_interval_ms` (`number`, default: `500`): Polling interval.
 - **Returns**: Satisfaction flag, elapsed time, poll count, and matched snapshot.
 
-### 7. `roku_launch`
+### 9. `roku_launch`
 Deep-links into specific content items within the sideloaded application.
 - **Inputs**:
   - `content_id` (`string`, optional): Target content ID.
